@@ -1,4 +1,4 @@
-package ru.javaops.topjava2.web;
+package ru.javaops.topjava2.config;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
