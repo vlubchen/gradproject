@@ -8,13 +8,13 @@
         <version>3.0.6</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>ru.javaops</groupId>
-    <artifactId>topjava2</artifactId>
+    <groupId>com.github.vlubchen</groupId>
+    <artifactId>gradproject</artifactId>
     <version>1.0</version>
 
     <name>Restaurant Voting Application</name>
     <description>TopJava graduation project application</description>
-    <url>https://javaops.ru/view/topjava2</url>
+    <url>https://github.com/vlubchen/gradproject</url>
 
     <properties>
         <java.version>17</java.version>
