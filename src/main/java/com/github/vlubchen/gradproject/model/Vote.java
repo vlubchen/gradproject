@@ -14,7 +14,7 @@ import java.time.LocalTime;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(callSuper = true)
-public class Vote extends NamedEntity {
+public class Vote extends BaseEntity {
 
     @Column(name = "created_date", nullable = false)
     @NotNull
@@ -36,8 +36,8 @@ public class Vote extends NamedEntity {
     @ToString.Exclude
     private Restaurant restaurant;
 
-    public Vote(Integer id, String name, LocalDate createdDate, LocalTime createdTime, User user, Restaurant restaurant) {
-        super(id, name);
+    public Vote(Integer id, LocalDate createdDate, LocalTime createdTime, User user, Restaurant restaurant) {
+        super(id);
         this.createdDate = createdDate;
         this.createdTime = createdTime;
         this.user = user;
