@@ -1,6 +1,7 @@
 package com.github.vlubchen.gradproject.repository;
 
 import com.github.vlubchen.gradproject.model.Vote;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,14 +13,13 @@ import java.util.Optional;
 public interface VoteRepository extends BaseRepository<Vote> {
 
     @Query("SELECT v FROM Vote v WHERE v.createdDate = :createdDate AND v.user.id = :userId")
-    Optional<Vote> findByDateAndUserId(LocalDate createdDate, int userId);
+    Optional<Vote> getByDateAndUserId(LocalDate createdDate, int userId);
 
-    @Query("""
-            SELECT v FROM Vote v WHERE v.createdDate = :createdDate AND v.restaurant.id = :restaurantId
-            ORDER BY v.createdTime DESC
-            """)
-    List<Vote> findAllByDateAndRestaurantId(LocalDate createdDate, int restaurantId);
+    @EntityGraph(attributePaths = {"restaurant"})
+    @Query("SELECT v FROM Vote v WHERE v.id = :id")
+    Optional<Vote> get(Integer id);
 
+    @EntityGraph(attributePaths = {"restaurant"})
     @Query("SELECT v FROM Vote v WHERE v.createdDate = :createdDate ORDER BY v.restaurant.id, v.user.id")
-    List<Vote> findAllByDate(LocalDate createdDate);
+    List<Vote> getAllByDate(LocalDate createdDate);
 }
