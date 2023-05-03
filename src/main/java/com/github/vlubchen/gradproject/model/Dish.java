@@ -7,7 +7,8 @@ import lombok.*;
 
 
 @Entity
-@Table(name = "dish")
+@Table(name = "dish", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "restaurant_id"},
+        name = "dish_unique_name_restaurant")})
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,7 +23,7 @@ public class Dish extends NamedEntity {
 
     @Column(name = "price", nullable = false)
     @NotNull
-    @Positive
+    @Positive(message = "Price must be positive")
     private Integer price;
 
 
