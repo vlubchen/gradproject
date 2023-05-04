@@ -24,12 +24,12 @@ public abstract class AbstractUserController {
     }
 
     public User get(int id) {
-        log.info("get {}", id);
+        log.info("get user with id {}", id);
         return repository.getExisted(id);
     }
 
     public void delete(int id) {
-        log.info("delete {}", id);
+        log.info("delete user with id {}", id);
         repository.deleteExisted(id);
     }
 }

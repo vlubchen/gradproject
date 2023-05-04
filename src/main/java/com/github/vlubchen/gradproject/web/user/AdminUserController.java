@@ -1,6 +1,7 @@
 package com.github.vlubchen.gradproject.web.user;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,7 +19,7 @@ import static com.github.vlubchen.gradproject.util.validation.ValidationUtil.che
 
 @RestController
 @RequestMapping(value = AdminUserController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
-// TODO: cache only most requested, seldom changed data!
+@Slf4j
 public class AdminUserController extends AbstractUserController {
 
     static final String REST_URL = "/api/admin/users";
@@ -38,13 +39,13 @@ public class AdminUserController extends AbstractUserController {
 
     @GetMapping
     public List<User> getAll() {
-        log.info("getAll");
+        log.info("get all users");
         return repository.findAll(Sort.by(Sort.Direction.ASC, "name", "email"));
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<User> createWithLocation(@Valid @RequestBody User user) {
-        log.info("create {}", user);
+        log.info("create user {}", user);
         checkNew(user);
         User created = repository.prepareAndSave(user);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -56,14 +57,14 @@ public class AdminUserController extends AbstractUserController {
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@Valid @RequestBody User user, @PathVariable int id) {
-        log.info("update {} with id={}", user, id);
+        log.info("update user {} with id={}", user, id);
         assureIdConsistent(user, id);
         repository.prepareAndSave(user);
     }
 
     @GetMapping("/by-email")
     public User getByEmail(@RequestParam String email) {
-        log.info("getByEmail {}", email);
+        log.info("get user by email {}", email);
         return repository.getExistedByEmail(email);
     }
 
@@ -71,7 +72,7 @@ public class AdminUserController extends AbstractUserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Transactional
     public void enable(@PathVariable int id, @RequestParam boolean enabled) {
-        log.info(enabled ? "enable {}" : "disable {}", id);
+        log.info(enabled ? "user enable with id {}" : "user disable with id {}", id);
         User user = repository.getExisted(id);
         user.setEnabled(enabled);
     }
