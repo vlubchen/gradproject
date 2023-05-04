@@ -29,5 +29,6 @@ public class DishUtil {
 
     public static void updateFromTo(Dish dish, DishTo dishTo) {
         dish.setName(dishTo.getName());
+        dish.setPrice(dishTo.getPrice());
     }
 }

@@ -32,7 +32,8 @@ public interface LunchRepository extends BaseRepository<Lunch> {
 
     default void deleteExisted(int id, int restaurantId) {
         if (delete(id, restaurantId) == 0) {
-            throw new NotFoundException("Lunch item with id=" + id + " not found");
+            throw new NotFoundException("Lunch item with id=" + id +
+                    " not found for restaurant with id=" + restaurantId);
         }
     }
 }

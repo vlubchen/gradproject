@@ -25,7 +25,8 @@ public interface DishRepository extends BaseRepository<Dish> {
 
     default void deleteExisted(int id, int restaurantId) {
         if (delete(id, restaurantId) == 0) {
-            throw new NotFoundException("Dish with id=" + id + " not found");
+            throw new NotFoundException("Dish with id=" + id +
+                    " not found for restaurant with id=" + restaurantId);
         }
     }
 
