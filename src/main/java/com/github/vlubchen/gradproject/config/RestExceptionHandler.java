@@ -66,6 +66,14 @@ public class RestExceptionHandler {
         }
     };
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ProblemDetail conflict (DataIntegrityViolationException ex, HttpServletRequest request) {
+        String path = request.getRequestURI();
+        Throwable root = getRootCause(ex);
+        log.error(ERR_PFX + "Exception " + root + " at request " + path, root);
+        return createProblemDetail(ex, DATA_CONFLICT, "Exception " + root.getClass().getSimpleName(), Map.of());
+    }
+
     @ExceptionHandler(BindException.class)
     public ProblemDetail bindException(BindException ex, HttpServletRequest request) {
         return processException(ex, request, Map.of("invalid_params", getErrorMap(ex.getBindingResult())));
