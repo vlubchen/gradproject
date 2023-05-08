@@ -44,4 +44,8 @@ public class Restaurant extends NamedEntity {
         this.address = address;
         this.email = email;
     }
+
+    public Restaurant(Restaurant restaurant) {
+        this(restaurant.id, restaurant.name, restaurant.phone, restaurant.address, restaurant.email);
+    }
 }
