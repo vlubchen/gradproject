@@ -29,7 +29,7 @@ import static com.github.vlubchen.gradproject.util.VoteUtil.getVotesTo;
 @Slf4j
 public class VoteController {
 
-    static final LocalTime MAX_TIME_FOR_UPDATE_VOTE = LocalTime.of(11, 0);
+    static LocalTime maxTimeForUpdateVote = LocalTime.of(11, 0);
 
     static final String REST_URL = "/api/votes";
 
@@ -43,9 +43,9 @@ public class VoteController {
     }
 
     @GetMapping("/by-date")
-    public List<VoteTo> getByDate(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createdDate) {
+    public List<VoteTo> getByDate(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         log.info("get all votes by date");
-        return getVotesTo(voteRepository.getAllByDate(createdDate));
+        return getVotesTo(voteRepository.getAllByDate(date));
     }
 
     @GetMapping
@@ -94,11 +94,15 @@ public class VoteController {
         if (vote.isNew() != isNew) {
             throw new IllegalRequestDataException("You should call " + (isNew ? "update" : "create") + " method");
         }
-        if (!isNew && LocalTime.now().isAfter(MAX_TIME_FOR_UPDATE_VOTE)) {
+        if (!isNew && LocalTime.now().isAfter(maxTimeForUpdateVote)) {
             throw new IllegalRequestDataException(String.format("You can change your vote only until  %s",
-                    MAX_TIME_FOR_UPDATE_VOTE));
+                    maxTimeForUpdateVote));
         }
         newVote.setId(vote.getId());
         return voteRepository.save(newVote);
+    }
+
+    public static void setMaxTimeForUpdateVote(LocalTime newMaxTimeForUpdateVote) {
+        maxTimeForUpdateVote = newMaxTimeForUpdateVote;
     }
 }

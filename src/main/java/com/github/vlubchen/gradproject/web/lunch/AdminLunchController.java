@@ -56,10 +56,11 @@ public class AdminLunchController extends AbstractLunchController {
     }
 
     @GetMapping("/by-date")
+    @Cacheable(key = "{#date, #restaurantId}")
     @Override
     public List<LunchTo> getByDate(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-                                          LocalDate createdDate, @PathVariable int restaurantId) {
-        return super.getByDate(createdDate, restaurantId);
+                                          LocalDate date, @PathVariable int restaurantId) {
+        return super.getByDate(date, restaurantId);
     }
 
     @GetMapping("/{id}")
