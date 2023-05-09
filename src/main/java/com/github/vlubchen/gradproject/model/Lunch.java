@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.validator.constraints.Range;
 
 import java.time.LocalDate;
 
@@ -37,7 +38,7 @@ public class Lunch extends BaseEntity {
 
     @Column(name = "price", nullable = false)
     @NotNull
-    @Positive(message = "Price must be positive")
+    @Range(min = 1000, max = 1000000)
     private Integer price;
 
     public Lunch(Integer id, LocalDate createdDate, Restaurant restaurant, Dish dish, Integer price) {

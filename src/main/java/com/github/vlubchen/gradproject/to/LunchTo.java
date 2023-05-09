@@ -1,10 +1,12 @@
 package com.github.vlubchen.gradproject.to;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;
+import org.hibernate.validator.constraints.Range;
 
 import java.time.LocalDate;
 
@@ -20,7 +22,8 @@ public class LunchTo extends BaseTo {
 
     int dishId;
 
-    @PositiveOrZero
+    @Range(min = 1000, max = 1000000)
+    @NotNull
     int price;
 
     public LunchTo(Integer id, LocalDate createdDate, int restaurantId, int dishId, int price) {

@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.validator.constraints.Range;
 
 
 @Entity
@@ -26,8 +27,8 @@ public class Dish extends NamedEntity {
     private Restaurant restaurant;
 
     @Column(name = "price", nullable = false)
+    @Range(min = 1000, max = 1000000)
     @NotNull
-    @Positive(message = "Price must be positive")
     private Integer price;
 
     public Dish(Integer id, String name, Restaurant restaurant, Integer price) {
