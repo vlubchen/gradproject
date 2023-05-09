@@ -3,9 +3,9 @@ package com.github.vlubchen.gradproject.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import lombok.*;
 
 import java.time.LocalDate;
 
@@ -46,5 +46,9 @@ public class Lunch extends BaseEntity {
         this.restaurant = restaurant;
         this.dish = dish;
         this.price = price;
+    }
+
+    public Lunch(Lunch lunch) {
+        this(lunch.id, lunch.createdDate, lunch.restaurant, lunch.dish, lunch.price);
     }
 }

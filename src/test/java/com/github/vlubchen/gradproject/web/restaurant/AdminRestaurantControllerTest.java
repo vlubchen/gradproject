@@ -5,6 +5,7 @@ import com.github.vlubchen.gradproject.repository.RestaurantRepository;
 import com.github.vlubchen.gradproject.util.JsonUtil;
 import com.github.vlubchen.gradproject.web.AbstractControllerTest;
 import com.github.vlubchen.gradproject.web.user.UserTestData;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -14,6 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.github.vlubchen.gradproject.config.RestExceptionHandler.EXCEPTION_DUPLICATE_RESTAURANT_NAME;
 import static com.github.vlubchen.gradproject.web.restaurant.AdminRestaurantController.REST_URL;
 import static com.github.vlubchen.gradproject.web.restaurant.RestaurantTestData.*;
 import static com.github.vlubchen.gradproject.web.user.UserTestData.ADMIN_MAIL;
@@ -127,7 +129,8 @@ class AdminRestaurantControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(invalid)))
                 .andDo(print())
-                .andExpect(status().isConflict());
+                .andExpect(status().isConflict())
+                .andExpect(content().string(Matchers.containsString(EXCEPTION_DUPLICATE_RESTAURANT_NAME)));
     }
 
     @Test

@@ -15,6 +15,7 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.firewall.RequestRejectedException;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -39,6 +40,10 @@ import static com.github.vlubchen.gradproject.error.ErrorType.*;
 @Slf4j
 public class RestExceptionHandler {
     public static final String ERR_PFX = "ERR# ";
+    public static final String EXCEPTION_DUPLICATE_RESTAURANT_NAME = "Restaurant with this name already exists";
+    public static final String EXCEPTION_DUPLICATE_DISH_NAME = "Dish with this name for this restaurant already exists";
+    public static final String EXCEPTION_DUPLICATE_LUNCH_RESTAURANT_DATE_DISH =
+            "Lunch item with this dish for this restaurant on this date already exists";
 
     @Getter
     private final MessageSource messageSource;
@@ -67,11 +72,27 @@ public class RestExceptionHandler {
     };
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ProblemDetail conflict (DataIntegrityViolationException ex, HttpServletRequest request) {
+    public ProblemDetail conflict(DataIntegrityViolationException ex, HttpServletRequest request) {
         String path = request.getRequestURI();
         Throwable root = getRootCause(ex);
         log.error(ERR_PFX + "Exception " + root + " at request " + path, root);
-        return createProblemDetail(ex, DATA_CONFLICT, "Exception " + root.getClass().getSimpleName(), Map.of());
+        String msg = ex.getMessage();
+        if (StringUtils.hasLength(msg)) {
+            msg = msg.toLowerCase();
+            if (msg.contains("dish_unique_restaurant_name")) {
+                msg = EXCEPTION_DUPLICATE_DISH_NAME;
+            } else if (msg.contains("restaurant_unique_name")) {
+                msg = EXCEPTION_DUPLICATE_RESTAURANT_NAME;
+            } else if (msg.contains("lunch_unique_restaurant_date_dish")) {
+                msg = EXCEPTION_DUPLICATE_LUNCH_RESTAURANT_DATE_DISH;
+            } else {
+                msg = "Unknown date error";
+            }
+        } else {
+            msg = "Unknown date error";
+        }
+        return createProblemDetail(ex, DATA_CONFLICT, "Exception " + root.getClass().getSimpleName() + " " +
+                msg, Map.of());
     }
 
     @ExceptionHandler(BindException.class)

@@ -7,17 +7,21 @@ import com.github.vlubchen.gradproject.util.JsonUtil;
 import com.github.vlubchen.gradproject.util.LunchUtil;
 import com.github.vlubchen.gradproject.web.AbstractControllerTest;
 import com.github.vlubchen.gradproject.web.restaurant.AdminRestaurantController;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 
+import static com.github.vlubchen.gradproject.config.RestExceptionHandler.EXCEPTION_DUPLICATE_LUNCH_RESTAURANT_DATE_DISH;
 import static com.github.vlubchen.gradproject.web.lunch.LunchTestData.*;
 import static com.github.vlubchen.gradproject.web.restaurant.RestaurantTestData.RESTAURANT1_ID;
 import static com.github.vlubchen.gradproject.web.user.UserTestData.ADMIN_MAIL;
@@ -146,5 +150,35 @@ class AdminLunchControllerTest extends AbstractControllerTest {
         LUNCH_MATCHER.assertMatch(created, newLunchTo);
         LUNCH_MATCHER.assertMatch(LunchUtil.getTo(lunchRepository.getByIdAndRestaurantId(newId, RESTAURANT1_ID))
                 .orElseThrow(), newLunchTo);
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    @WithUserDetails(value = ADMIN_MAIL)
+    void createDuplicate() throws Exception {
+        Lunch newLunch = getNew();
+        LunchTo newLunchTo = LunchUtil.createTo(newLunch, newLunch.getRestaurant(), lunchItem1.getDish());
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(newLunchTo)))
+                .andDo(print())
+                .andExpect(status().isConflict())
+                .andExpect(content().string(Matchers.containsString(EXCEPTION_DUPLICATE_LUNCH_RESTAURANT_DATE_DISH)));
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    @WithUserDetails(value = ADMIN_MAIL)
+    void updateDuplicate() throws Exception {
+        Lunch duplicate = new Lunch(lunchItem1);
+        duplicate.setId(LUNCH_ID_2);
+        LunchTo duplicateTo = LunchUtil.createTo(duplicate, duplicate.getRestaurant(), duplicate.getDish());
+        perform(MockMvcRequestBuilders.put(REST_URL_SLASH + LUNCH_ID_2)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(duplicateTo)))
+                .andDo(print())
+                .andDo(print())
+                .andExpect(status().isConflict())
+                .andExpect(content().string(Matchers.containsString(EXCEPTION_DUPLICATE_LUNCH_RESTAURANT_DATE_DISH)));
     }
 }
