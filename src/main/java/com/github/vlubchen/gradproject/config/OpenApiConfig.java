@@ -22,8 +22,8 @@ import org.springframework.context.annotation.Configuration;
                 title = "REST API documentation",
                 version = "1.0",
                 description = """
-                        Приложение по <a href='https://github.com/vlubchen/gradproject'>курсу TopJava-2</a>: решение выпускного проекта
-                        <p><b>Тестовые креденшелы:</b><br>
+                        Application for course <a href='https://github.com/vlubchen/gradproject'> TopJava-2</a>: solution for graduate project
+                        <p><b>Test credentials:</b><br>
                         - user@yandex.ru / password<br>
                         - admin@gmail.com / admin<br>
                         - guest@gmail.com / guest</p>
