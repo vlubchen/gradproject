@@ -10,8 +10,9 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "lunch", uniqueConstraints = {@UniqueConstraint(columnNames = {"created_date", "restaurant_id", "dish_id"},
-        name = "lunch_unique_date_restaurant_dish")})
+@Table(name = "lunch", indexes = @Index(name = "lunch_unique_restaurant_date_dish_idx",
+        columnList = "restaurant_id, created_date, dish_id", unique = true))
+
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
