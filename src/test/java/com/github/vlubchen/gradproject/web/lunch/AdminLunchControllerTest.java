@@ -153,6 +153,24 @@ class AdminLunchControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    @WithUserDetails(value = ADMIN_MAIL)
+    void createWithPriceEqualZero() throws Exception {
+        LunchItem newLunchItem = getNew();
+        newLunchItem.setPrice(0);
+        LunchItemTo newLunchItemTo = LunchUtil.createTo(newLunchItem, newLunchItem.getRestaurant(), newLunchItem.getDish());
+        ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(newLunchItemTo)))
+                .andExpect(status().isCreated());
+
+        LunchItemTo created = LUNCH_MATCHER.readFromJson(action);
+        int newId = created.id();
+        LUNCH_MATCHER.assertMatch(created, LunchUtil.getTo(lunchRepository.getByIdAndRestaurantId(newId, RESTAURANT1_ID))
+                        .orElseThrow());
+
+    }
+
+    @Test
     @Transactional(propagation = Propagation.NEVER)
     @WithUserDetails(value = ADMIN_MAIL)
     void createDuplicate() throws Exception {

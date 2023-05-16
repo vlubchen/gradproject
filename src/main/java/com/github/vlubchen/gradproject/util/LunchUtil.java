@@ -13,7 +13,9 @@ import java.util.stream.Collectors;
 @UtilityClass
 public class LunchUtil {
     public static LunchItem createNewFromTo(LunchItemTo lunchItemTo, Restaurant restaurant, Dish dish) {
-        return new LunchItem(null, lunchItemTo.getCreatedDate(), restaurant, dish, lunchItemTo.getPrice());
+        int price = lunchItemTo.getPrice();
+        return new LunchItem(null, lunchItemTo.getCreatedDate(), restaurant, dish,
+                price == 0 ? dish.getPrice() : price);
     }
 
     public LunchItemTo createTo(LunchItem lunchItem, Restaurant restaurant, Dish dish) {
