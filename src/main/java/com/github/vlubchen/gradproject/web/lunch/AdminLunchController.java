@@ -1,12 +1,12 @@
 package com.github.vlubchen.gradproject.web.lunch;
 
 import com.github.vlubchen.gradproject.model.Dish;
-import com.github.vlubchen.gradproject.model.Lunch;
+import com.github.vlubchen.gradproject.model.LunchItem;
 import com.github.vlubchen.gradproject.model.Restaurant;
 import com.github.vlubchen.gradproject.repository.DishRepository;
 import com.github.vlubchen.gradproject.repository.LunchRepository;
 import com.github.vlubchen.gradproject.repository.RestaurantRepository;
-import com.github.vlubchen.gradproject.to.LunchTo;
+import com.github.vlubchen.gradproject.to.LunchItemTo;
 import com.github.vlubchen.gradproject.util.LunchUtil;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -33,9 +33,9 @@ import static com.github.vlubchen.gradproject.util.validation.ValidationUtil.che
 @RestController
 @RequestMapping(value = AdminLunchController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
-@CacheConfig(cacheNames = "lunches")
+@CacheConfig(cacheNames = "lunchItems")
 public class AdminLunchController extends AbstractLunchController {
-    static final String REST_URL = "/api/admin/restaurants/{restaurantId}/lunches";
+    static final String REST_URL = "/api/admin/restaurants/{restaurantId}/lunch-items";
 
     private final RestaurantRepository restaurantRepository;
 
@@ -51,21 +51,21 @@ public class AdminLunchController extends AbstractLunchController {
     @GetMapping
     @Cacheable
     @Override
-    public List<LunchTo> getOnToday(@PathVariable int restaurantId) {
+    public List<LunchItemTo> getOnToday(@PathVariable int restaurantId) {
         return super.getOnToday(restaurantId);
     }
 
     @GetMapping("/by-date")
     @Cacheable(key = "{#date, #restaurantId}")
     @Override
-    public List<LunchTo> getByDate(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    public List<LunchItemTo> getByDate(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
                                           LocalDate date, @PathVariable int restaurantId) {
         return super.getByDate(date, restaurantId);
     }
 
     @GetMapping("/{id}")
     @Override
-    public ResponseEntity<LunchTo> get(@PathVariable int id, @PathVariable int restaurantId) {
+    public ResponseEntity<LunchItemTo> get(@PathVariable int id, @PathVariable int restaurantId) {
         return super.get(id, restaurantId);
     }
 
@@ -81,14 +81,14 @@ public class AdminLunchController extends AbstractLunchController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @CacheEvict(allEntries = true)
     @Transactional
-    public ResponseEntity<LunchTo> createWithLocation(@Valid @RequestBody LunchTo lunchTo,
-                                                      @PathVariable int restaurantId) {
-        log.info("create lunch item {}", lunchTo);
-        checkNew(lunchTo);
+    public ResponseEntity<LunchItemTo> createWithLocation(@Valid @RequestBody LunchItemTo lunchItemTo,
+                                                          @PathVariable int restaurantId) {
+        log.info("create lunch item {}", lunchItemTo);
+        checkNew(lunchItemTo);
         Restaurant restaurant = restaurantRepository.getExisted(restaurantId);
-        Dish dish = dishRepository.getExistedByIdAndRestaurantId(lunchTo.getDishId(), restaurantId);
-        Lunch lunch = LunchUtil.createNewFromTo(lunchTo, restaurant, dish);
-        Lunch created = lunchRepository.save(lunch);
+        Dish dish = dishRepository.getExistedByIdAndRestaurantId(lunchItemTo.getDishId(), restaurantId);
+        LunchItem lunchItem = LunchUtil.createNewFromTo(lunchItemTo, restaurant, dish);
+        LunchItem created = lunchRepository.save(lunchItem);
         Map<String, Integer> urlParams = new HashMap<>();
         urlParams.put("restaurantId", restaurantId);
         urlParams.put("id", created.getId());
@@ -101,14 +101,14 @@ public class AdminLunchController extends AbstractLunchController {
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @CacheEvict(allEntries = true)
-    public void update(@Valid @RequestBody LunchTo lunchTo, @PathVariable int id,
+    public void update(@Valid @RequestBody LunchItemTo lunchItemTo, @PathVariable int id,
                        @PathVariable int restaurantId) {
-        log.info("update lunch item {} with id={}", lunchTo, id);
-        assureIdConsistent(lunchTo, id);
+        log.info("update lunch item {} with id={}", lunchItemTo, id);
+        assureIdConsistent(lunchItemTo, id);
         Restaurant restaurant = restaurantRepository.getExisted(restaurantId);
-        Dish dish = dishRepository.getExistedByIdAndRestaurantId(lunchTo.getDishId(), restaurantId);
-        Lunch lunch = LunchUtil.createNewFromTo(lunchTo, restaurant, dish);
-        lunch.setId(lunchTo.getId());
-        lunchRepository.save(lunch);
+        Dish dish = dishRepository.getExistedByIdAndRestaurantId(lunchItemTo.getDishId(), restaurantId);
+        LunchItem lunchItem = LunchUtil.createNewFromTo(lunchItemTo, restaurant, dish);
+        lunchItem.setId(lunchItemTo.getId());
+        lunchRepository.save(lunchItem);
     }
 }

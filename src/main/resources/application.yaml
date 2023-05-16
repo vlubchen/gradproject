@@ -31,13 +31,13 @@ spring:
 
   # https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-application-properties.html#common-application-properties-cache
   cache:
-    cache-names: lunches
+    cache-names: lunchItems
     caffeine.spec: maximumSize=1000,expireAfterAccess=60s
 
 logging:
   level:
     root: WARN
-    com.vlubchen.gradproject: DEBUG
+    com.github.vlubchen.gradproject: DEBUG
     org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver: DEBUG
 
 server.servlet:

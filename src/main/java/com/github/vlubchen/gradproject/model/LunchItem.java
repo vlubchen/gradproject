@@ -11,14 +11,14 @@ import org.hibernate.validator.constraints.Range;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "lunch", indexes = @Index(name = "lunch_unique_restaurant_date_dish_idx",
+@Table(name = "lunch_item", indexes = @Index(name = "lunch_unique_restaurant_date_dish_idx",
         columnList = "restaurant_id, created_date, dish_id", unique = true))
 
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(callSuper = true)
-public class Lunch extends BaseEntity {
+public class LunchItem extends BaseEntity {
     @Column(name = "created_date", nullable = false)
     @NotNull
     private LocalDate createdDate;
@@ -41,7 +41,7 @@ public class Lunch extends BaseEntity {
     @Range(min = 1000, max = 1000000)
     private Integer price;
 
-    public Lunch(Integer id, LocalDate createdDate, Restaurant restaurant, Dish dish, Integer price) {
+    public LunchItem(Integer id, LocalDate createdDate, Restaurant restaurant, Dish dish, Integer price) {
         super(id);
         this.createdDate = createdDate;
         this.restaurant = restaurant;
@@ -49,7 +49,7 @@ public class Lunch extends BaseEntity {
         this.price = price;
     }
 
-    public Lunch(Lunch lunch) {
-        this(lunch.id, lunch.createdDate, lunch.restaurant, lunch.dish, lunch.price);
+    public LunchItem(LunchItem lunchItem) {
+        this(lunchItem.id, lunchItem.createdDate, lunchItem.restaurant, lunchItem.dish, lunchItem.price);
     }
 }

@@ -20,13 +20,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class UserLunchControllerTest extends AbstractControllerTest {
 
-    private static final String REST_URL = UserRestaurantController.REST_URL + '/' + RESTAURANT1_ID + "/lunches";
+    private static final String REST_URL = UserRestaurantController.REST_URL + '/' + RESTAURANT1_ID + "/lunch-items";
 
     private static final String REST_URL_SLASH = REST_URL + '/';
 
     @Test
     void getUnAuth() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL_SLASH + LUNCH_ID_1))
+        perform(MockMvcRequestBuilders.get(REST_URL_SLASH + LUNCH_ITEM_ID_1))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -37,7 +37,7 @@ class UserLunchControllerTest extends AbstractControllerTest {
                 .ofPattern("yyyy-MM-dd").format(LocalDate.now())))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(LUNCH_MATCHER.contentJson(LunchUtil.getLunchesTo(lunchOnToday)));
+                .andExpect(LUNCH_MATCHER.contentJson(LunchUtil.getLunchItemsTo(lunchOnToday)));
     }
 
     @Test
@@ -46,7 +46,7 @@ class UserLunchControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(LUNCH_MATCHER.contentJson(LunchUtil.getLunchesTo(lunchOnToday)));
+                .andExpect(LUNCH_MATCHER.contentJson(LunchUtil.getLunchItemsTo(lunchOnToday)));
     }
 
     @Test

@@ -28,7 +28,7 @@ VALUES ('Грибной суп', '1', 25000),
        ('Греческий', '3', 20000),
        ('Чай', '3', 5000);
 
-INSERT INTO LUNCH(created_date, restaurant_id, dish_id, price)
+INSERT INTO LUNCH_ITEM(created_date, restaurant_id, dish_id, price)
 VALUES (CURRENT_DATE - 2, 1, 1, 10000),
        (CURRENT_DATE - 2, 1, 2, 40000),
        (CURRENT_DATE - 2, 1, 3, 70000),

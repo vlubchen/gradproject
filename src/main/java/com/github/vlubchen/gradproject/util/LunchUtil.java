@@ -1,9 +1,9 @@
 package com.github.vlubchen.gradproject.util;
 
 import com.github.vlubchen.gradproject.model.Dish;
-import com.github.vlubchen.gradproject.model.Lunch;
+import com.github.vlubchen.gradproject.model.LunchItem;
 import com.github.vlubchen.gradproject.model.Restaurant;
-import com.github.vlubchen.gradproject.to.LunchTo;
+import com.github.vlubchen.gradproject.to.LunchItemTo;
 import lombok.experimental.UtilityClass;
 
 import java.util.List;
@@ -12,22 +12,22 @@ import java.util.stream.Collectors;
 
 @UtilityClass
 public class LunchUtil {
-    public static Lunch createNewFromTo(LunchTo lunchTo, Restaurant restaurant, Dish dish) {
-        return new Lunch(null, lunchTo.getCreatedDate(), restaurant, dish, lunchTo.getPrice());
+    public static LunchItem createNewFromTo(LunchItemTo lunchItemTo, Restaurant restaurant, Dish dish) {
+        return new LunchItem(null, lunchItemTo.getCreatedDate(), restaurant, dish, lunchItemTo.getPrice());
     }
 
-    public LunchTo createTo(Lunch lunch, Restaurant restaurant, Dish dish) {
-        return new LunchTo(lunch.getId(), lunch.getCreatedDate(), restaurant.getId(),
-                dish.getId(), lunch.getPrice());
+    public LunchItemTo createTo(LunchItem lunchItem, Restaurant restaurant, Dish dish) {
+        return new LunchItemTo(lunchItem.getId(), lunchItem.getCreatedDate(), restaurant.getId(),
+                dish.getId(), lunchItem.getPrice());
     }
 
-    public static List<LunchTo> getLunchesTo(List<Lunch> lunches) {
-        return lunches.stream()
+    public static List<LunchItemTo> getLunchItemsTo(List<LunchItem> lunchItems) {
+        return lunchItems.stream()
                 .map(lunch -> LunchUtil.createTo(lunch, lunch.getRestaurant(), lunch.getDish()))
                 .collect(Collectors.toList());
     }
 
-    public static Optional<LunchTo> getTo(Optional<Lunch> optionalLunch) {
+    public static Optional<LunchItemTo> getTo(Optional<LunchItem> optionalLunch) {
         return optionalLunch.map(lunch -> LunchUtil.createTo(lunch, lunch.getRestaurant(), lunch.getDish()));
     }
 }
