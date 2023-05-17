@@ -17,8 +17,7 @@ Build a voting system for deciding where to have lunch.
   - If it is after 11:00 then it is too late, vote can't be changed
 * Each restaurant provides a new menu each day.
 -------------------------------------------------------------
-* Additionally: Admin may not fill in the price of the lunch, after saving
-* the price of the lunch item will be equal to the price of the dish.
+* Additionally: Admin may not fill in the price of the lunch, after saving the price of the lunch item will be equal to the price of the dish.
 -------------------------------------------------------------
 - Stack: [JDK 17](http://jdk.java.net/17/), Spring Boot 3.x, Lombok, H2, Caffeine Cache, SpringDoc OpenApi 2.x, Mapstruct, Liquibase 
 - Run: `mvn spring-boot:run` in root directory.
@@ -26,6 +25,7 @@ Build a voting system for deciding where to have lunch.
 [REST API documentation](http://localhost:8080/)  
 Credentials:
 ```
-User:  user@yandex.ru / password
 Admin: admin@gmail.com / admin
+User:  user@yandex.ru / password
+Guest: guest@gmail.com / guest
 ```
