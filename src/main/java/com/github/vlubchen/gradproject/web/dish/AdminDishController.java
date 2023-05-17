@@ -1,7 +1,9 @@
 package com.github.vlubchen.gradproject.web.dish;
 
+import com.github.vlubchen.gradproject.error.IllegalRequestDataException;
 import com.github.vlubchen.gradproject.model.Dish;
 import com.github.vlubchen.gradproject.repository.DishRepository;
+import com.github.vlubchen.gradproject.repository.LunchRepository;
 import com.github.vlubchen.gradproject.repository.RestaurantRepository;
 import com.github.vlubchen.gradproject.to.DishTo;
 import com.github.vlubchen.gradproject.util.DishUtil;
@@ -33,10 +35,13 @@ public class AdminDishController {
 
     private final DishRepository dishRepository;
 
-    public AdminDishController(DishRepository dishRepository,
-                               RestaurantRepository restaurantRepository) {
+    private final LunchRepository lunchRepository;
+
+    public AdminDishController(DishRepository dishRepository, RestaurantRepository restaurantRepository,
+                               LunchRepository lunchRepository) {
         this.dishRepository = dishRepository;
         this.restaurantRepository = restaurantRepository;
+        this.lunchRepository = lunchRepository;
     }
 
     @GetMapping("/{id}")
@@ -48,10 +53,13 @@ public class AdminDishController {
     @DeleteMapping("/{id}")
     @Transactional
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @CacheEvict(allEntries = true, value = "lunches")
+    @CacheEvict(allEntries = true, value = "lunchItems")
     public void delete(@PathVariable int id, @PathVariable int restaurantId) {
         log.info("delete dish with id={} for restaurantId={}", id, restaurantId);
         dishRepository.getExistedByIdAndRestaurantId(id, restaurantId);
+        if (lunchRepository.findFirstByDishId(id).isPresent()) {
+            throw new IllegalRequestDataException("This dish is used in lunch item menu, you can't delete dish");
+        }
         dishRepository.deleteExisted(id, restaurantId);
     }
 
@@ -65,7 +73,6 @@ public class AdminDishController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DishTo> createWithLocation(@Valid @RequestBody DishTo dishTo, @PathVariable int restaurantId) {
         log.info("create dish {} for restaurantId={}", dishTo, restaurantId);
-
         checkNew(dishTo);
         Dish dish = DishUtil.createNewFromTo(dishTo, restaurantRepository.getExisted(restaurantId));
         Dish created = dishRepository.save(dish);
@@ -84,6 +91,9 @@ public class AdminDishController {
     public void update(@Valid @RequestBody DishTo dishTo, @PathVariable int id, @PathVariable int restaurantId) {
         log.info("update dish {} with id={} for restaurantId={}", dishTo, id, restaurantId);
         assureIdConsistent(dishTo, id);
+        if (lunchRepository.findFirstByDishId(dishTo.getId()).isPresent()) {
+            throw new IllegalRequestDataException("This dish is used in lunch item menu, you can't update dish");
+        }
         Dish dish = dishRepository.getExistedByIdAndRestaurantId(id, restaurantId);
         DishUtil.updateFromTo(dish, dishTo);
         dishRepository.save(dish);

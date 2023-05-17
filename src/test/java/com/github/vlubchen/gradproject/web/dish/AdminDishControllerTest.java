@@ -66,10 +66,18 @@ class AdminDishControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void delete() throws Exception {
-        perform(MockMvcRequestBuilders.delete(REST_URL_SLASH + DISH2_ID))
+        perform(MockMvcRequestBuilders.delete(REST_URL_SLASH + DISH5_ID))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-        assertFalse(dishRepository.getByIdAndRestaurantId(DISH2_ID, RESTAURANT1_ID).isPresent());
+        assertFalse(dishRepository.getByIdAndRestaurantId(DISH5_ID, RESTAURANT1_ID).isPresent());
+    }
+
+    @Test
+    @WithUserDetails(value = ADMIN_MAIL)
+    void deleteIsPresentInLunchItems() throws Exception {
+        perform(MockMvcRequestBuilders.delete(REST_URL_SLASH + DISH2_ID))
+                .andDo(print())
+                .andExpect(status().isUnprocessableEntity());
     }
 
     @Test
@@ -84,15 +92,14 @@ class AdminDishControllerTest extends AbstractControllerTest {
     @WithUserDetails(value = ADMIN_MAIL)
     void update() throws Exception {
         Dish updated = DishTestData.getUpdated();
-        updated.setId(DishTestData.DISH2_ID);
         DishTo updatedTo = DishUtil.createTo(updated);
-        perform(MockMvcRequestBuilders.put(REST_URL_SLASH + DISH2_ID)
+        perform(MockMvcRequestBuilders.put(REST_URL_SLASH + DISH5_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updatedTo)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-        DISH_MATCHER.assertMatch(DishUtil.getTo(dishRepository.getByIdAndRestaurantId(DISH2_ID, RESTAURANT1_ID))
+        DISH_MATCHER.assertMatch(DishUtil.getTo(dishRepository.getByIdAndRestaurantId(DISH5_ID, RESTAURANT1_ID))
                 .orElseThrow(), updatedTo);
     }
 
@@ -131,9 +138,9 @@ class AdminDishControllerTest extends AbstractControllerTest {
     @Transactional(propagation = Propagation.NEVER)
     @WithUserDetails(value = ADMIN_MAIL)
     void updateDuplicateName() throws Exception {
-        Dish duplicate = new Dish(dish1);
+        Dish duplicate = new Dish(dish5);
         duplicate.setName(DishTestData.dish2.getName());
-        perform(MockMvcRequestBuilders.put(REST_URL_SLASH + DISH1_ID)
+        perform(MockMvcRequestBuilders.put(REST_URL_SLASH + DISH5_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(duplicate)))
                 .andDo(print())

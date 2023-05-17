@@ -36,4 +36,6 @@ public interface LunchRepository extends BaseRepository<LunchItem> {
                     " not found for restaurant with id=" + restaurantId);
         }
     }
+
+    Optional<LunchItem> findFirstByDishId(int dishId);
 }

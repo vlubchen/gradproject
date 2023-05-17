@@ -14,14 +14,17 @@ public class DishTestData {
 
     public static final int DISH1_ID = 1;
     public static final int DISH2_ID = 2;
+    public static final int DISH3_ID = 3;
+    public static final int DISH4_ID = 4;
+    public static final int DISH5_ID = 5;
 
     public static final int NOT_FOUND = 100;
 
     public static final Dish dish1 = new Dish(DISH1_ID, "Грибной суп", restaurant1, 25000);
     public static final Dish dish2 = new Dish(DISH2_ID, "Стейк", restaurant1, 80000);
-    public static final Dish dish3 = new Dish(3, "Винегрет", restaurant1, 15000);
-    public static final Dish dish4 = new Dish(4, "Компот", restaurant1, 5000);
-    public static final Dish dish5 = new Dish(5, "Новое блюдо", restaurant1, 40000);
+    public static final Dish dish3 = new Dish(DISH3_ID, "Винегрет", restaurant1, 15000);
+    public static final Dish dish4 = new Dish(DISH4_ID, "Компот", restaurant1, 5000);
+    public static final Dish dish5 = new Dish(DISH5_ID, "Новое блюдо", restaurant1, 40000);
 
     public static final List<Dish> dishes = List.of(dish3, dish1, dish4, dish5, dish2);
 
@@ -30,6 +33,6 @@ public class DishTestData {
     }
 
     public static Dish getUpdated() {
-        return new Dish(DISH2_ID, "UpdatedName", restaurant2, 10000);
+        return new Dish(DISH5_ID, "UpdatedName", restaurant1, 10000);
     }
 }
