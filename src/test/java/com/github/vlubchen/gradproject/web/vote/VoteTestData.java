@@ -24,7 +24,7 @@ public class VoteTestData {
     public static final Vote voteOfUser = new Vote(USER_VOTE_ID, LocalDate.now(), LocalTime.now(), user, restaurant2);
     public static final Vote voteOfAdmin = new Vote(ADMIN_VOTE_ID, LocalDate.now(), LocalTime.now(), admin, restaurant1);
 
-    public static final List<Vote> votesOnToday = List.of(voteOfAdmin, voteOfUser);
+    public static final List<Vote> votesOnToday = List.of(voteOfUser, voteOfAdmin);
 
     public static Vote getNew() {
         return new Vote(null, LocalDate.now(), LocalTime.now(), guest, restaurant1);

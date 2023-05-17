@@ -19,10 +19,7 @@ public interface LunchRepository extends BaseRepository<LunchItem> {
     Optional<LunchItem> getByIdAndRestaurantId(int id, int restaurantId);
 
     @EntityGraph(attributePaths = {"dish"})
-    @Query("""
-            SELECT l FROM LunchItem l WHERE l.createdDate = :createdDate and l.restaurant.id = :restaurantId
-            ORDER BY l.restaurant.id, l.dish.id
-            """)
+    @Query("SELECT l FROM LunchItem l WHERE l.createdDate = :createdDate and l.restaurant.id = :restaurantId")
     List<LunchItem> getAllByDateAndRestaurantId(LocalDate createdDate, int restaurantId);
 
     @Transactional

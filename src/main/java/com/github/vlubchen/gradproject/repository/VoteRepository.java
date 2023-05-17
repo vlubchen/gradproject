@@ -19,7 +19,6 @@ public interface VoteRepository extends BaseRepository<Vote> {
     @Query("SELECT v FROM Vote v WHERE v.id = :id")
     Optional<Vote> get(Integer id);
 
-    @EntityGraph(attributePaths = {"restaurant"})
-    @Query("SELECT v FROM Vote v WHERE v.createdDate = :createdDate ORDER BY v.restaurant.id, v.user.id")
+    @Query("SELECT v FROM Vote v WHERE v.createdDate = :createdDate")
     List<Vote> getAllByDate(LocalDate createdDate);
 }
