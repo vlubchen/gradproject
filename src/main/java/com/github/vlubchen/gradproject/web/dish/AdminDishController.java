@@ -9,7 +9,6 @@ import com.github.vlubchen.gradproject.to.DishTo;
 import com.github.vlubchen.gradproject.util.DishUtil;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -53,7 +52,6 @@ public class AdminDishController {
     @DeleteMapping("/{id}")
     @Transactional
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @CacheEvict(allEntries = true, value = "lunchItems")
     public void delete(@PathVariable int id, @PathVariable int restaurantId) {
         log.info("delete dish with id={} for restaurantId={}", id, restaurantId);
         dishRepository.getExistedByIdAndRestaurantId(id, restaurantId);

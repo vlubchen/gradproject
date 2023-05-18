@@ -49,17 +49,16 @@ public class AdminLunchController extends AbstractLunchController {
     }
 
     @GetMapping
-    @Cacheable
+    @Cacheable(key = "{#restaurantId}")
     @Override
     public List<LunchItemTo> getOnToday(@PathVariable int restaurantId) {
         return super.getOnToday(restaurantId);
     }
 
     @GetMapping("/by-date")
-    @Cacheable(key = "{#date, #restaurantId}")
     @Override
     public List<LunchItemTo> getByDate(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-                                          LocalDate date, @PathVariable int restaurantId) {
+                                       LocalDate date, @PathVariable int restaurantId) {
         return super.getByDate(date, restaurantId);
     }
 
@@ -71,7 +70,7 @@ public class AdminLunchController extends AbstractLunchController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @CacheEvict(allEntries = true)
+    @CacheEvict(key = "{#restaurantId}")
     @Transactional
     public void delete(@PathVariable int id, @PathVariable int restaurantId) {
         log.info("delete lunch item with id={}", id);
@@ -79,7 +78,7 @@ public class AdminLunchController extends AbstractLunchController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @CacheEvict(allEntries = true)
+    @CacheEvict(key = "{#restaurantId}")
     @Transactional
     public ResponseEntity<LunchItemTo> createWithLocation(@Valid @RequestBody LunchItemTo lunchItemTo,
                                                           @PathVariable int restaurantId) {
@@ -100,7 +99,7 @@ public class AdminLunchController extends AbstractLunchController {
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @CacheEvict(allEntries = true)
+    @CacheEvict(key = "{#restaurantId}")
     public void update(@Valid @RequestBody LunchItemTo lunchItemTo, @PathVariable int id,
                        @PathVariable int restaurantId) {
         log.info("update lunch item {} with id={}", lunchItemTo, id);

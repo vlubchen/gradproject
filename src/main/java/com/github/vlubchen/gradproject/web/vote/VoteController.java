@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -29,7 +30,7 @@ import static com.github.vlubchen.gradproject.util.VoteUtil.getVotesTo;
 @Slf4j
 public class VoteController {
 
-    static LocalTime maxTimeForUpdateVote = LocalTime.of(11, 0);
+    static LocalTime maxTimeForUpdateVote = LocalTime.of(11, 00);
 
     static final String REST_URL = "/api/votes";
 
@@ -65,6 +66,7 @@ public class VoteController {
     }
 
     @PostMapping(value = "/today", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
     public ResponseEntity<VoteTo> createWithLocation(@RequestBody Integer restaurantId,
                                                      @AuthenticationPrincipal AuthUser authUser) {
         log.info("create vote for user id={} with restaurant id={}", authUser.id(), restaurantId);
@@ -76,6 +78,7 @@ public class VoteController {
     }
 
     @PutMapping(value = "/today", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Transactional
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@RequestBody Integer restaurantId, @AuthenticationPrincipal AuthUser authUser) {
         log.info("update vote for user id {} with restaurant id={}", authUser.id(), restaurantId);
@@ -92,7 +95,7 @@ public class VoteController {
             throw new IllegalRequestDataException("You should call " + (isNew ? "update" : "create") + " method");
         }
         if (!isNew && currentTime.isAfter(maxTimeForUpdateVote) && currentTime.isAfter(LocalTime.MIN)
-        && currentTime.isBefore(LocalTime.MAX)) {
+                && currentTime.isBefore(LocalTime.MAX)) {
             throw new IllegalRequestDataException(String.format("You can change your vote only until  %s",
                     maxTimeForUpdateVote));
         }

@@ -24,7 +24,6 @@ public class UserLunchController extends AbstractLunchController {
     }
 
     @GetMapping("/by-date")
-    @Cacheable(key = "{#date, #restaurantId}")
     @Override
     public List<LunchItemTo> getByDate(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
                                        @PathVariable int restaurantId) {
@@ -32,7 +31,7 @@ public class UserLunchController extends AbstractLunchController {
     }
 
     @GetMapping
-    @Cacheable(key = "{'today', #restaurantId}")
+    @Cacheable(key = "{#restaurantId}")
     @Override
     public List<LunchItemTo> getOnToday(@PathVariable int restaurantId) {
         return super.getOnToday(restaurantId);
