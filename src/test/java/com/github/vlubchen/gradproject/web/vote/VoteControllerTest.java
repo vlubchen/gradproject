@@ -22,7 +22,6 @@ import static com.github.vlubchen.gradproject.web.restaurant.RestaurantTestData.
 import static com.github.vlubchen.gradproject.web.restaurant.RestaurantTestData.RESTAURANT3_ID;
 import static com.github.vlubchen.gradproject.web.user.UserTestData.*;
 import static com.github.vlubchen.gradproject.web.vote.VoteController.REST_URL;
-import static com.github.vlubchen.gradproject.web.vote.VoteTestData.NOT_FOUND;
 import static com.github.vlubchen.gradproject.web.vote.VoteTestData.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -37,28 +36,11 @@ class VoteControllerTest extends AbstractControllerTest {
 
     @Test
     @WithUserDetails(value = USER_MAIL)
-    void getTodayByUser() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL_SLASH + "profile"))
+    void getOnTodayByUser() throws Exception {
+        perform(MockMvcRequestBuilders.get(REST_URL_SLASH + "today"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(VOTE_MATCHER.contentJson(VoteUtil.createTo(voteOfUser)));
-    }
-
-    @Test
-    @WithUserDetails(value = USER_MAIL)
-    void get() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL_SLASH + USER_VOTE_ID))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(VOTE_MATCHER.contentJson(VoteUtil.createTo(voteOfUser)));
-    }
-
-    @Test
-    @WithUserDetails(value = ADMIN_MAIL)
-    void getNotFound() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL_SLASH + NOT_FOUND))
-                .andDo(print())
-                .andExpect(status().isNotFound());
+                .andExpect(VOTE_MATCHER.contentJson(VoteUtil.createTo(voteOfUser3)));
     }
 
     @Test
@@ -68,29 +50,29 @@ class VoteControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    @WithUserDetails(value = ADMIN_MAIL)
-    void getOnToday() throws Exception {
+    @WithUserDetails(value = USER_MAIL)
+    void getAllByUser() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(VOTE_MATCHER.contentJson(VoteUtil.getVotesTo(votesOnToday)));
+                .andExpect(VOTE_MATCHER.contentJson(VoteUtil.getVotesTo(votesByUser)));
     }
 
     @Test
-    @WithUserDetails(value = ADMIN_MAIL)
+    @WithUserDetails(value = USER_MAIL)
     void getByDate() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL_SLASH + "by-date?date=" + DateTimeFormatter
-                .ofPattern("yyyy-MM-dd").format(LocalDate.now())))
+                .ofPattern("yyyy-MM-dd").format(LocalDate.now().minusDays(2))))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(VOTE_MATCHER.contentJson(VoteUtil.getVotesTo(votesOnToday)));
+                .andExpect(VOTE_MATCHER.contentJson(VoteUtil.createTo(voteOfUser1)));
     }
 
     @Test
     @WithUserDetails(value = GUEST_MAIL)
     void createWithLocation() throws Exception {
         Vote newVote = VoteTestData.getNew();
-        ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL_SLASH + "profile")
+        ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL_SLASH + "today")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(String.valueOf(RESTAURANT1_ID)))
                 .andExpect(status().isCreated());
@@ -109,7 +91,7 @@ class VoteControllerTest extends AbstractControllerTest {
     void createDuplicate() throws Exception {
         Vote newVote = VoteTestData.getUpdated();
         newVote.setUser(user);
-        perform(MockMvcRequestBuilders.post(REST_URL_SLASH + "profile")
+        perform(MockMvcRequestBuilders.post(REST_URL_SLASH + "today")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(String.valueOf(RESTAURANT3_ID)))
                 .andExpect(status().isUnprocessableEntity());
@@ -122,13 +104,13 @@ class VoteControllerTest extends AbstractControllerTest {
         Vote updatedVote = VoteTestData.getUpdated();
         LocalTime initMaxTimeForUpdateVote = VoteController.maxTimeForUpdateVote;
         VoteController.setMaxTimeForUpdateVote(LocalTime.MAX);
-        perform(MockMvcRequestBuilders.put(REST_URL_SLASH + "profile")
+        perform(MockMvcRequestBuilders.put(REST_URL_SLASH + "today")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(String.valueOf(RESTAURANT3_ID)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-        VOTE_MATCHER.assertMatch(VoteUtil.getTo(voteRepository.get(USER_VOTE_ID))
+        VOTE_MATCHER.assertMatch(VoteUtil.getTo(voteRepository.get(USER_VOTE_ID_5))
                 .orElseThrow(), VoteUtil.createTo(updatedVote));
         VoteController.setMaxTimeForUpdateVote(initMaxTimeForUpdateVote);
     }
@@ -139,7 +121,7 @@ class VoteControllerTest extends AbstractControllerTest {
     void updateAfterMaxTime() throws Exception {
         LocalTime initMaxTimeForUpdateVote = VoteController.maxTimeForUpdateVote;
         VoteController.setMaxTimeForUpdateVote(LocalTime.MIN);
-        perform(MockMvcRequestBuilders.put(REST_URL_SLASH + "profile")
+        perform(MockMvcRequestBuilders.put(REST_URL_SLASH + "today")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(String.valueOf(RESTAURANT3_ID)))
                 .andDo(print())

@@ -42,32 +42,29 @@ public class VoteController {
         this.restaurantRepository = restaurantRepository;
     }
 
-    @GetMapping("/by-date")
-    public List<VoteTo> getByDate(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        log.info("get all votes by date");
-        return getVotesTo(voteRepository.getAllByDate(date));
-    }
-
-    @GetMapping
-    public List<VoteTo> getOnToday() {
-        log.info("get all votes on today");
-        return getVotesTo(voteRepository.getAllByDate(LocalDate.now()));
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<VoteTo> get(@PathVariable int id) {
-        log.info("get vote by id {}", id);
-        return ResponseEntity.of(VoteUtil.getTo(voteRepository.get(id)));
-    }
-
-    @GetMapping(value = "/profile", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/today", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VoteTo> getByUser(@AuthenticationPrincipal AuthUser authUser) {
         int userId = authUser.id();
-        log.info("get current vote for user id={}", userId);
+        log.info("get vote on today for user id={}", userId);
         return ResponseEntity.of(VoteUtil.getTo(voteRepository.getByDateAndUserId(LocalDate.now(), userId)));
     }
 
-    @PostMapping(value = "/profile", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping("/by-date")
+    public ResponseEntity<VoteTo> getByDate(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+                                            @AuthenticationPrincipal AuthUser authUser) {
+        int userId = authUser.id();
+        log.info("get vote for user id={} by date={}", userId, date);
+        return ResponseEntity.of(VoteUtil.getTo(voteRepository.getByDateAndUserId(date, userId)));
+    }
+
+    @GetMapping
+    public List<VoteTo> getAllByUserId(@AuthenticationPrincipal AuthUser authUser) {
+        int userId = authUser.id();
+        log.info("get all votes for user id={}", userId);
+        return getVotesTo(voteRepository.getAllByUserId(userId));
+    }
+
+    @PostMapping(value = "/today", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<VoteTo> createWithLocation(@RequestBody Integer restaurantId,
                                                      @AuthenticationPrincipal AuthUser authUser) {
         log.info("create vote for user id={} with restaurant id={}", authUser.id(), restaurantId);
@@ -78,7 +75,7 @@ public class VoteController {
         return ResponseEntity.created(uriOfNewResource).body(VoteUtil.createTo(newVote));
     }
 
-    @PutMapping(value = "/profile", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/today", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@RequestBody Integer restaurantId, @AuthenticationPrincipal AuthUser authUser) {
         log.info("update vote for user id {} with restaurant id={}", authUser.id(), restaurantId);
@@ -94,7 +91,8 @@ public class VoteController {
         if (vote.isNew() != isNew) {
             throw new IllegalRequestDataException("You should call " + (isNew ? "update" : "create") + " method");
         }
-        if (!isNew && LocalTime.now().isAfter(maxTimeForUpdateVote)) {
+        if (!isNew && currentTime.isAfter(maxTimeForUpdateVote) && currentTime.isAfter(LocalTime.MIN)
+        && currentTime.isBefore(LocalTime.MAX)) {
             throw new IllegalRequestDataException(String.format("You can change your vote only until  %s",
                     maxTimeForUpdateVote));
         }
