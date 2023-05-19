@@ -9,6 +9,7 @@ import com.github.vlubchen.gradproject.to.DishTo;
 import com.github.vlubchen.gradproject.util.DishUtil;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -52,6 +53,7 @@ public class AdminDishController {
     @DeleteMapping("/{id}")
     @Transactional
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @CacheEvict(value = "restaurants", allEntries = true)
     public void delete(@PathVariable int id, @PathVariable int restaurantId) {
         log.info("delete dish with id={} for restaurantId={}", id, restaurantId);
         dishRepository.getExistedByIdAndRestaurantId(id, restaurantId);
@@ -69,6 +71,7 @@ public class AdminDishController {
 
     @Transactional
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @CacheEvict(value = "restaurants", allEntries = true)
     public ResponseEntity<DishTo> createWithLocation(@Valid @RequestBody DishTo dishTo, @PathVariable int restaurantId) {
         log.info("create dish {} for restaurantId={}", dishTo, restaurantId);
         checkNew(dishTo);
@@ -86,6 +89,7 @@ public class AdminDishController {
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Transactional
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @CacheEvict(value = "restaurants", allEntries = true)
     public void update(@Valid @RequestBody DishTo dishTo, @PathVariable int id, @PathVariable int restaurantId) {
         log.info("update dish {} with id={} for restaurantId={}", dishTo, id, restaurantId);
         assureIdConsistent(dishTo, id);

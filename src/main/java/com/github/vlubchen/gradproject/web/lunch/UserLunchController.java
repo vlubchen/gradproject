@@ -3,8 +3,6 @@ package com.github.vlubchen.gradproject.web.lunch;
 import com.github.vlubchen.gradproject.repository.LunchRepository;
 import com.github.vlubchen.gradproject.to.LunchItemTo;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +13,6 @@ import java.util.List;
 @RestController
 @RequestMapping(value = UserLunchController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
-@CacheConfig(cacheNames = "lunchItems")
 public class UserLunchController extends AbstractLunchController {
     static final String REST_URL = "/api/restaurants/{restaurantId}/lunch-items";
 
@@ -31,7 +28,6 @@ public class UserLunchController extends AbstractLunchController {
     }
 
     @GetMapping
-    @Cacheable(key = "{#restaurantId}")
     @Override
     public List<LunchItemTo> getOnToday(@PathVariable int restaurantId) {
         return super.getOnToday(restaurantId);

@@ -10,9 +10,7 @@ import com.github.vlubchen.gradproject.to.LunchItemTo;
 import com.github.vlubchen.gradproject.util.LunchUtil;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -33,7 +31,6 @@ import static com.github.vlubchen.gradproject.util.validation.ValidationUtil.che
 @RestController
 @RequestMapping(value = AdminLunchController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
-@CacheConfig(cacheNames = "lunchItems")
 public class AdminLunchController extends AbstractLunchController {
     static final String REST_URL = "/api/admin/restaurants/{restaurantId}/lunch-items";
 
@@ -49,7 +46,6 @@ public class AdminLunchController extends AbstractLunchController {
     }
 
     @GetMapping
-    @Cacheable(key = "{#restaurantId}")
     @Override
     public List<LunchItemTo> getOnToday(@PathVariable int restaurantId) {
         return super.getOnToday(restaurantId);
@@ -70,7 +66,7 @@ public class AdminLunchController extends AbstractLunchController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @CacheEvict(key = "{#restaurantId}")
+    @CacheEvict(value = "restaurants", allEntries = true)
     @Transactional
     public void delete(@PathVariable int id, @PathVariable int restaurantId) {
         log.info("delete lunch item with id={}", id);
@@ -78,7 +74,7 @@ public class AdminLunchController extends AbstractLunchController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @CacheEvict(key = "{#restaurantId}")
+    @CacheEvict(value = "restaurants", allEntries = true)
     @Transactional
     public ResponseEntity<LunchItemTo> createWithLocation(@Valid @RequestBody LunchItemTo lunchItemTo,
                                                           @PathVariable int restaurantId) {
@@ -99,7 +95,7 @@ public class AdminLunchController extends AbstractLunchController {
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @CacheEvict(key = "{#restaurantId}")
+    @CacheEvict(value = "restaurants", allEntries = true)
     public void update(@Valid @RequestBody LunchItemTo lunchItemTo, @PathVariable int id,
                        @PathVariable int restaurantId) {
         log.info("update lunch item {} with id={}", lunchItemTo, id);

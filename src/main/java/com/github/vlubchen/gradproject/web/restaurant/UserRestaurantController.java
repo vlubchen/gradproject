@@ -3,6 +3,8 @@ package com.github.vlubchen.gradproject.web.restaurant;
 import com.github.vlubchen.gradproject.model.Restaurant;
 import com.github.vlubchen.gradproject.repository.RestaurantRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = UserRestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
+@CacheConfig(cacheNames = "restaurants")
 public class UserRestaurantController {
 
     public static final String REST_URL = "/api/restaurants";
@@ -33,6 +36,7 @@ public class UserRestaurantController {
     }
 
     @GetMapping
+    @Cacheable
     public List<Restaurant> getAllWithLunchItemsOnToday() {
         log.info("get all restaurants with lunch items on today");
         return restaurantRepository.getAllWithLunchItemsByDate(LocalDate.now());
