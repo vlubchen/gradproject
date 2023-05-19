@@ -1,5 +1,6 @@
 package com.github.vlubchen.gradproject.web.restaurant;
 
+import com.github.vlubchen.gradproject.util.RestaurantUtil;
 import com.github.vlubchen.gradproject.web.AbstractControllerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -24,7 +25,7 @@ class UserRestaurantControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RESTAURANT_MATCHER.contentJson(restaurant1));
+                .andExpect(RESTAURANT_MATCHER.contentJson(RestaurantUtil.createTo(restaurant1)));
     }
 
     @Test
@@ -47,6 +48,6 @@ class UserRestaurantControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(RESTAURANT_MATCHER.contentJson(restaurants));
+                .andExpect(RESTAURANT_MATCHER.contentJson(RestaurantUtil.getRestaurantsTo(restaurants)));
     }
 }

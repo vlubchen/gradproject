@@ -10,28 +10,31 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @RequestMapping(value = UserRestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
-public final class UserRestaurantController extends AbstractRestaurantController {
+public class UserRestaurantController {
 
     public static final String REST_URL = "/api/restaurants";
 
+    private final RestaurantRepository restaurantRepository;
+
     public UserRestaurantController(RestaurantRepository restaurantRepository) {
-        super(restaurantRepository);
+        this.restaurantRepository = restaurantRepository;
     }
 
     @GetMapping("/{id}")
-    @Override
-    public ResponseEntity<Restaurant> get(@PathVariable int id) {
-        return super.get(id);
+    public ResponseEntity<Restaurant> getWithLunchItemsByIdOnToday(@PathVariable int id) {
+        log.info("get restaurant with id={} with lunch items on today", id);
+        return ResponseEntity.of(restaurantRepository.getWithLunchItemsByDate(id, LocalDate.now()));
     }
 
     @GetMapping
-    @Override
-    public List<Restaurant> getAll() {
-        return super.getAll();
+    public List<Restaurant> getAllWithLunchItemsOnToday() {
+        log.info("get all restaurants with lunch items on today");
+        return restaurantRepository.getAllWithLunchItemsByDate(LocalDate.now());
     }
 }

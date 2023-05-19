@@ -1,5 +1,8 @@
 package com.github.vlubchen.gradproject.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -25,13 +28,18 @@ public class LunchItem extends BaseEntity {
     @JoinColumn(name = "restaurant_id")
     @NotNull
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonBackReference
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     @ToString.Exclude
     private Restaurant restaurant;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "dish_id")
     @NotNull
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonManagedReference
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     @ToString.Exclude
     private Dish dish;
 

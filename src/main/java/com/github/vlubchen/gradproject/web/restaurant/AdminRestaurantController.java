@@ -2,6 +2,8 @@ package com.github.vlubchen.gradproject.web.restaurant;
 
 import com.github.vlubchen.gradproject.model.Restaurant;
 import com.github.vlubchen.gradproject.repository.RestaurantRepository;
+import com.github.vlubchen.gradproject.to.RestaurantTo;
+import com.github.vlubchen.gradproject.util.RestaurantUtil;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,18 +21,20 @@ import static com.github.vlubchen.gradproject.util.validation.ValidationUtil.che
 @RestController
 @RequestMapping(value = AdminRestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
-public class AdminRestaurantController extends AbstractRestaurantController {
+public class AdminRestaurantController {
 
     public static final String REST_URL = "/api/admin/restaurants";
 
+    private final RestaurantRepository restaurantRepository;
+
     public AdminRestaurantController(RestaurantRepository restaurantRepository) {
-        super(restaurantRepository);
+        this.restaurantRepository = restaurantRepository;
     }
 
     @GetMapping("/{id}")
-    @Override
-    public ResponseEntity<Restaurant> get(@PathVariable int id) {
-        return super.get(id);
+    public ResponseEntity<RestaurantTo> get(@PathVariable int id) {
+        log.info("get restaurant with id={}", id);
+        return ResponseEntity.of(RestaurantUtil.getTo(restaurantRepository.findById(id)));
     }
 
     @DeleteMapping("/{id}")
@@ -41,27 +45,30 @@ public class AdminRestaurantController extends AbstractRestaurantController {
     }
 
     @GetMapping
-    @Override
-    public List<Restaurant> getAll() {
-        return super.getAll();
+    public List<RestaurantTo> getAll() {
+        log.info("get all restaurants");
+        return RestaurantUtil.getRestaurantsTo(restaurantRepository.findAll());
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Restaurant> createWithLocation(@Valid @RequestBody Restaurant restaurant) {
-        log.info("create restaurant {}", restaurant);
-        checkNew(restaurant);
+    public ResponseEntity<RestaurantTo> createWithLocation(@Valid @RequestBody RestaurantTo restaurantTo) {
+        log.info("create restaurant {}", restaurantTo);
+        checkNew(restaurantTo);
+        Restaurant restaurant = RestaurantUtil.createNewFromTo(restaurantTo);
         Restaurant created = restaurantRepository.save(restaurant);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
-        return ResponseEntity.created(uriOfNewResource).body(created);
+        return ResponseEntity.created(uriOfNewResource).body(RestaurantUtil.createTo(created));
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@Valid @RequestBody Restaurant restaurant, @PathVariable int id) {
-        log.info("update restaurant {} with id={}", restaurant, id);
-        assureIdConsistent(restaurant, id);
+    public void update(@Valid @RequestBody RestaurantTo restaurantTo, @PathVariable int id) {
+        log.info("update restaurant {} with id={}", restaurantTo, id);
+        assureIdConsistent(restaurantTo, id);
+        Restaurant restaurant = restaurantRepository.getExisted(id);
+        RestaurantUtil.updateFromTo(restaurant, restaurantTo);
         restaurantRepository.save(restaurant);
     }
 }

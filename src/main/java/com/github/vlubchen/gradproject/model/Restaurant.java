@@ -1,14 +1,17 @@
 package com.github.vlubchen.gradproject.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.github.vlubchen.gradproject.util.validation.NoHtml;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import java.util.Set;
 
 @Entity
 @Table(name = "restaurant", uniqueConstraints = {@UniqueConstraint(columnNames = {"name"},
@@ -37,6 +40,12 @@ public class Restaurant extends NamedEntity {
     @Size(max = 128)
     @NoHtml
     private String email;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "restaurant")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonManagedReference
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
+    private Set<LunchItem> lunchItems;
 
     public Restaurant(Integer id, String name, String phone, String address, String email) {
         super(id, name);

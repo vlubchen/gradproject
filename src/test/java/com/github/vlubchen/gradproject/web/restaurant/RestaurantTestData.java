@@ -1,13 +1,14 @@
 package com.github.vlubchen.gradproject.web.restaurant;
 
 import com.github.vlubchen.gradproject.model.Restaurant;
+import com.github.vlubchen.gradproject.to.RestaurantTo;
 import com.github.vlubchen.gradproject.web.MatcherFactory;
 
 import java.util.List;
 
 public class RestaurantTestData {
-    public static final MatcherFactory.Matcher<Restaurant> RESTAURANT_MATCHER =
-            MatcherFactory.usingIgnoringFieldsComparator(Restaurant.class);
+    public static final MatcherFactory.Matcher<RestaurantTo> RESTAURANT_MATCHER =
+            MatcherFactory.usingIgnoringFieldsComparator(RestaurantTo.class);
 
     public static final int RESTAURANT1_ID = 1;
     public static final int RESTAURANT2_ID = 2;
@@ -22,7 +23,7 @@ public class RestaurantTestData {
     public static final Restaurant restaurant3 = new Restaurant(RESTAURANT3_ID, "BeerHouse",
             "+7(8512)54-72-72", "ул. Савушкина, д.38", "pivdom@am-house.ru");
 
-    public static final List<Restaurant> restaurants = List.of(restaurant3, restaurant2, restaurant1);
+    public static final List<Restaurant> restaurants = List.of(restaurant1, restaurant2, restaurant3);
 
     public static Restaurant getNew() {
         return new Restaurant(null, "NewName", "00-00-00", "newAddress",
