@@ -15,7 +15,7 @@ public interface DishRepository extends BaseRepository<Dish> {
     @Query("SELECT d FROM Dish d WHERE d.id = :id and d.restaurant.id = :restaurantId")
     Optional<Dish> getByIdAndRestaurantId(int id, int restaurantId);
 
-    @Query("SELECT d FROM Dish d WHERE d.restaurant.id = :restaurantId ORDER BY d.name")
+    @Query("SELECT d FROM Dish d WHERE d.restaurant.id = :restaurantId")
     List<Dish> getAllByRestaurantId(int restaurantId);
 
     @Transactional

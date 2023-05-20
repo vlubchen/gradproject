@@ -26,7 +26,7 @@ public class DishTestData {
     public static final Dish dish4 = new Dish(DISH4_ID, "Компот", restaurant1, 5000);
     public static final Dish dish5 = new Dish(DISH5_ID, "Новое блюдо", restaurant1, 40000);
 
-    public static final List<Dish> dishes = List.of(dish3, dish1, dish4, dish5, dish2);
+    public static final List<Dish> dishes = List.of(dish1, dish2, dish3, dish4, dish5);
 
     public static Dish getNew() {
         return new Dish(null, "NewDish", restaurant2, 10000);

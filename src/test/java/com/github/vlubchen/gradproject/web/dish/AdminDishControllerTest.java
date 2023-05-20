@@ -126,9 +126,10 @@ class AdminDishControllerTest extends AbstractControllerTest {
     @WithUserDetails(value = ADMIN_MAIL)
     void createDuplicateName() throws Exception {
         Dish invalid = new Dish(null, dish1.getName(), dish1.getRestaurant(), dish1.getPrice());
+        DishTo invalidTo = DishUtil.createTo(invalid);
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(invalid)))
+                .content(JsonUtil.writeValue(invalidTo)))
                 .andDo(print())
                 .andExpect(status().isConflict())
                 .andExpect(content().string(Matchers.containsString(EXCEPTION_DUPLICATE_DISH_NAME)));
@@ -140,9 +141,10 @@ class AdminDishControllerTest extends AbstractControllerTest {
     void updateDuplicateName() throws Exception {
         Dish duplicate = new Dish(dish5);
         duplicate.setName(DishTestData.dish2.getName());
+        DishTo duplicateTo = DishUtil.createTo(duplicate);
         perform(MockMvcRequestBuilders.put(REST_URL_SLASH + DISH5_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(duplicate)))
+                .content(JsonUtil.writeValue(duplicateTo)))
                 .andDo(print())
                 .andExpect(status().isConflict())
                 .andExpect(content().string(Matchers.containsString(EXCEPTION_DUPLICATE_DISH_NAME)));
