@@ -101,15 +101,6 @@ class AdminLunchControllerTest extends AbstractControllerTest {
 
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
-    void getTodayByRestaurant() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(LUNCH_MATCHER.contentJson(LunchUtil.getLunchItemsTo(lunchOnToday)));
-    }
-
-    @Test
-    @WithUserDetails(value = ADMIN_MAIL)
     void getByWrongDate() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL_SLASH + "by-date?date=" + DateTimeFormatter
                 .ofPattern("yyyy-MM-dd").format(LocalDate.of(2023, 3, 1))))
@@ -166,7 +157,7 @@ class AdminLunchControllerTest extends AbstractControllerTest {
         LunchItemTo created = LUNCH_MATCHER.readFromJson(action);
         int newId = created.id();
         LUNCH_MATCHER.assertMatch(created, LunchUtil.getTo(lunchRepository.getByIdAndRestaurantId(newId, RESTAURANT1_ID))
-                        .orElseThrow());
+                .orElseThrow());
 
     }
 

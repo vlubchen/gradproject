@@ -31,8 +31,10 @@ import static com.github.vlubchen.gradproject.util.validation.ValidationUtil.che
 @RestController
 @RequestMapping(value = AdminLunchController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
-public class AdminLunchController extends AbstractLunchController {
+public class AdminLunchController {
     static final String REST_URL = "/api/admin/restaurants/{restaurantId}/lunch-items";
+
+    protected final LunchRepository lunchRepository;
 
     private final RestaurantRepository restaurantRepository;
 
@@ -40,28 +42,22 @@ public class AdminLunchController extends AbstractLunchController {
 
     public AdminLunchController(LunchRepository lunchRepository, RestaurantRepository restaurantRepository,
                                 DishRepository dishRepository) {
-        super(lunchRepository);
+        this.lunchRepository = lunchRepository;
         this.restaurantRepository = restaurantRepository;
         this.dishRepository = dishRepository;
     }
 
-    @GetMapping
-    @Override
-    public List<LunchItemTo> getOnToday(@PathVariable int restaurantId) {
-        return super.getOnToday(restaurantId);
-    }
-
     @GetMapping("/by-date")
-    @Override
     public List<LunchItemTo> getByDate(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
                                        LocalDate date, @PathVariable int restaurantId) {
-        return super.getByDate(date, restaurantId);
+        log.info("get lunch items by date {} for restaurantId={}", date, restaurantId);
+        return LunchUtil.getLunchItemsTo(lunchRepository.getAllByDateAndRestaurantId(date, restaurantId));
     }
 
     @GetMapping("/{id}")
-    @Override
     public ResponseEntity<LunchItemTo> get(@PathVariable int id, @PathVariable int restaurantId) {
-        return super.get(id, restaurantId);
+        log.info("get lunch item with id={} for restaurantId={}", id, restaurantId);
+        return ResponseEntity.of(LunchUtil.getTo(lunchRepository.getByIdAndRestaurantId(id, restaurantId)));
     }
 
     @DeleteMapping("/{id}")

@@ -9,7 +9,6 @@ import com.github.vlubchen.gradproject.to.VoteTo;
 import com.github.vlubchen.gradproject.util.VoteUtil;
 import com.github.vlubchen.gradproject.web.AuthUser;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -50,14 +49,6 @@ public class VoteController {
         return ResponseEntity.of(VoteUtil.getTo(voteRepository.getByDateAndUserId(LocalDate.now(), userId)));
     }
 
-    @GetMapping("/by-date")
-    public ResponseEntity<VoteTo> getByDate(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-                                            @AuthenticationPrincipal AuthUser authUser) {
-        int userId = authUser.id();
-        log.info("get vote for user id={} by date={}", userId, date);
-        return ResponseEntity.of(VoteUtil.getTo(voteRepository.getByDateAndUserId(date, userId)));
-    }
-
     @GetMapping
     public List<VoteTo> getAllByUserId(@AuthenticationPrincipal AuthUser authUser) {
         int userId = authUser.id();
@@ -94,8 +85,7 @@ public class VoteController {
         if (vote.isNew() != isNew) {
             throw new IllegalRequestDataException("You should call " + (isNew ? "update" : "create") + " method");
         }
-        if (!isNew && currentTime.isAfter(maxTimeForUpdateVote) && currentTime.isAfter(LocalTime.MIN)
-                && currentTime.isBefore(LocalTime.MAX)) {
+        if (!isNew && currentTime.isAfter(maxTimeForUpdateVote)) {
             throw new IllegalRequestDataException(String.format("You can change your vote only until  %s",
                     maxTimeForUpdateVote));
         }

@@ -30,7 +30,8 @@ public class UserRestaurantController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Restaurant> getWithLunchItemsByIdOnToday(@PathVariable int id) {
+    @Cacheable
+    public ResponseEntity<Restaurant> getByIdWithLunchItemsOnToday(@PathVariable int id) {
         log.info("get restaurant with id={} with lunch items on today", id);
         return ResponseEntity.of(restaurantRepository.getWithLunchItemsByDate(id, LocalDate.now()));
     }

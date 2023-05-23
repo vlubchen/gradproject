@@ -14,9 +14,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 
 import static com.github.vlubchen.gradproject.web.restaurant.RestaurantTestData.RESTAURANT1_ID;
 import static com.github.vlubchen.gradproject.web.restaurant.RestaurantTestData.RESTAURANT3_ID;
@@ -56,16 +54,6 @@ class VoteControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(VOTE_MATCHER.contentJson(VoteUtil.getVotesTo(votesByUser)));
-    }
-
-    @Test
-    @WithUserDetails(value = USER_MAIL)
-    void getByDate() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL_SLASH + "by-date?date=" + DateTimeFormatter
-                .ofPattern("yyyy-MM-dd").format(LocalDate.now().minusDays(2))))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(VOTE_MATCHER.contentJson(VoteUtil.createTo(voteOfUser1)));
     }
 
     @Test
